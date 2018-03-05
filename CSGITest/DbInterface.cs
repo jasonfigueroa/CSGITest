@@ -26,7 +26,6 @@ namespace CSGITest
         static async Task RunAsync(UserAuth userAuth, MatchStats matchStats)
         {
             HttpClient _client = new HttpClient();
-            HttpClient _client2 = new HttpClient();
 
             string authUrl = "http://localhost:5000/auth";
 
@@ -40,18 +39,18 @@ namespace CSGITest
 
             string postMatchStatsUrl = "http://localhost:5000/matchstats";
 
-            if(_client2.DefaultRequestHeaders.Authorization != null)
+            if(_client.DefaultRequestHeaders.Authorization != null)
             {
                 Console.WriteLine("Authorization Header was not null");
-                _client2.DefaultRequestHeaders.Authorization = null;
+                _client.DefaultRequestHeaders.Authorization = null;
             }
 
-            _client2.DefaultRequestHeaders.Add("Authorization", $"JWT {jwt.access_token}");
+            _client.DefaultRequestHeaders.Add("Authorization", $"JWT {jwt.access_token}");
 
             string serializedMatchStats = JsonConvert.SerializeObject(matchStats);
             StringContent matchStatsStringContent = new StringContent(serializedMatchStats, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage matchStatsResponseMessage = await _client2.PostAsync(postMatchStatsUrl, matchStatsStringContent);
+            HttpResponseMessage matchStatsResponseMessage = await _client.PostAsync(postMatchStatsUrl, matchStatsStringContent);
 
             // temp
             //Console.WriteLine(matchStatsResponseMessage);

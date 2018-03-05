@@ -15,7 +15,6 @@ namespace CSGITest
         public int deaths { get; set; }
         public int mvps { get; set; }
         public int score { get; set; }
-        public int minutes_played { get; set; } = 20;
-        //public DateTime TimeStart { get; set; }
+        public int minutes_played { get; set; }
     }
 }

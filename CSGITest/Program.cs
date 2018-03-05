@@ -21,6 +21,7 @@ namespace CSGITest
 
         static string playerName = "!logical";
         static MatchStats matchStats = new MatchStats();
+        static MatchTime matchTime = new MatchTime();
 
         static bool stashed = false;
         static int counter = 0;
@@ -29,18 +30,18 @@ namespace CSGITest
             if (gs.Round.Phase == RoundPhase.Live && gs.Player.Name == playerName)
             {
                 counter++;
+
+                // initial match start
+                if (counter == 1)
+                {
+                    matchTime.MatchStart = DateTime.Now;
+                }
+
                 Console.Clear();
 
                 Console.WriteLine($"counter: {counter}");
-                //Console.WriteLine(gs.JSON);
 
-                // temp off
                 stashed = false;
-
-                //Console.WriteLine($"Player Name: {gs.Player.Name}");
-                //Console.WriteLine($"Match Stats: {gs.Player.MatchStats.JSON}");
-                //Console.WriteLine($"Player State: {gs.Player.JSON}");
-                //System.IO.File.WriteAllText(@"D:\Users\Jason\Desktop\CSGSI.json", $"{gs.AllPlayers.JSON},");
 
                 Console.WriteLine(gs.Player.MatchStats.JSON);
 
@@ -50,22 +51,31 @@ namespace CSGITest
                 matchStats.deaths = gs.Player.MatchStats.Deaths;
                 matchStats.mvps = gs.Player.MatchStats.MVPs;
                 matchStats.score = gs.Player.MatchStats.Score;
-                //matchStats.TimeStart = DateTime.Now;
-                //matchStats.PrintMatchStats();
             }
 
-            //if (gs.Round.Phase == RoundPhase.Over && stashed == false)
-            //{
-            //    stashed = true;
-
-            //}
-
+            // the stashed flag is needed because without it the program will try 
+            // go save, to the db, the match stats multiple times for one match
             if (gs.Map.Phase == MapPhase.GameOver && stashed == false)
             {
-                //_player.PrintPlayer();
                 stashed = true;
-                DbInterface.SaveToDb(matchStats);
-                Console.WriteLine("saved to db ...");
+                matchTime.MatchStop = DateTime.Now;
+                matchTime.MatchTotal = matchTime.MatchStop - matchTime.MatchStart;
+
+                matchStats.minutes_played = matchTime.MatchTotal.Minutes;
+
+                // reset counter to help track a round change
+                counter = 0;
+
+                try
+                {
+                    DbInterface.SaveToDb(matchStats);
+                    Console.WriteLine("saved to the database");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    Console.WriteLine("something went wrong while saving to the database");
+                }
             }
         }
     }
