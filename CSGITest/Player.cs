@@ -8,7 +8,13 @@ namespace CSGITest
 {
     class Player
     {
-        public string name { get; set; }
-        public string steamid { get; set; }
+        public string Name { get; set; }
+        public string SteamId { get; set; }
+
+        public Player(string name, string steamId)
+        {
+            Name = name;
+            SteamId = steamId;
+        }
     }
 }
