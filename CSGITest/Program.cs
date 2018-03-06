@@ -76,8 +76,8 @@ namespace CSGITest
                 Console.WriteLine();
 
                 matchStats.kills = gs.Player.MatchStats.Kills;
-                matchStats.round_kill = gs.Player.State.RoundKills;
-                matchStats.round_kill_hs = gs.Player.State.RoundKillHS;
+                matchStats.round_kills = gs.Player.State.RoundKills;
+                matchStats.round_killhs = gs.Player.State.RoundKillHS;
                 matchStats.assists = gs.Player.MatchStats.Assists;
                 matchStats.deaths = gs.Player.MatchStats.Deaths;
                 matchStats.mvps = gs.Player.MatchStats.MVPs;
@@ -99,7 +99,7 @@ namespace CSGITest
 
                 try
                 {
-                    DbInterface.SaveToDb(matchStats);
+                    DbInterface.SaveToDb(match, matchStats);
                     Console.WriteLine("saved to the database");
                 }
                 catch (Exception ex)
