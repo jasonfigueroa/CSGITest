@@ -9,10 +9,8 @@ namespace CSGITest
 {
     internal class MatchStats
     {
-        public string match_id { get; set; }
+        public int match_id { get; set; }
         public int kills { get; set; }
-        public int round_kills { get; set; }
-        public int round_killhs { get; set; }
         public int assists { get; set; }
         public int deaths { get; set; }
         public int mvps { get; set; }

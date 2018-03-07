@@ -20,18 +20,18 @@ namespace CSGITest
         }
 
         // creating Player
-        static string playerName = "!logical"; // temporarily hard coded
+        //static string playerName = "!logical"; // temporarily hard coded
         static string steamId = "76561197994895226"; // temporarily hard coded
-        Player player = new Player(playerName, steamId);
+        //Player player = new Player(playerName, steamId);
 
         // TODO need user_id, the following is a temporary placeholder
-        static int userId = 1;
+        //static int userId = 1;
 
         // creating Match
-        static Match match = new Match { user_id = userId };
+        static Match match = new Match();
 
         // TODO need match_id, the following is a temporary placeholder 
-        static int matchId = 1;
+        //static int matchId = 1;
 
         // creating MatchStats
         static MatchStats matchStats = new MatchStats();
@@ -43,26 +43,26 @@ namespace CSGITest
         static bool stashed = false;
         static int counter = 0;
 
+        // NOTE: application does not account for the player switching teams 
+        // and will only capture the initial team the player joins
         static void OnNewGameState(GameState gs)
         {
-            if (gs.Round.Phase == RoundPhase.Live && gs.Player.Name == playerName)
+            if (gs.Round.Phase == RoundPhase.Live && gs.Player.SteamID == steamId)
             {
                 counter++;
+                stashed = false;
 
-                // initial match start
+                // first round played for each match
                 if (counter == 1)
                 {
                     matchTime.MatchStart = DateTime.Now;
                     match.datetime_start = DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
                     match.map_name = gs.Map.Name;
-                    match.team = gs.Player.Team.ToString();
                 }
 
                 Console.Clear();
 
                 Console.WriteLine($"counter: {counter}");
-
-                stashed = false;
 
                 // TODO need better printing
                 Console.WriteLine("MatchStats.JSON");
@@ -75,9 +75,9 @@ namespace CSGITest
                 Console.WriteLine(gs.Player.JSON);
                 Console.WriteLine();
 
+                match.team = gs.Player.Team.ToString();
+                Console.WriteLine($"player team: {match.team}");
                 matchStats.kills = gs.Player.MatchStats.Kills;
-                matchStats.round_kills = gs.Player.State.RoundKills;
-                matchStats.round_killhs = gs.Player.State.RoundKillHS;
                 matchStats.assists = gs.Player.MatchStats.Assists;
                 matchStats.deaths = gs.Player.MatchStats.Deaths;
                 matchStats.mvps = gs.Player.MatchStats.MVPs;
@@ -93,6 +93,8 @@ namespace CSGITest
                 matchTime.MatchTotal = matchTime.MatchStop - matchTime.MatchStart;
 
                 match.minutes_played = matchTime.MatchTotal.Minutes;
+                match.round_win_team = gs.Round.WinTeam.ToString();
+                Console.WriteLine($"winning team: {match.round_win_team}");
 
                 // reset counter to help track a round change
                 counter = 0;

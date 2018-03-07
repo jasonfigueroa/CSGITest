@@ -60,6 +60,13 @@ namespace CSGITest
 
             HttpResponseMessage matchResponseMessage = await _client.PostAsync(postMatchUrl, matchStringContent);
 
+            // TODO on_post need to extract the match_id from the response
+            string matchResponseString = await matchResponseMessage.Content.ReadAsStringAsync();
+
+            MatchResponse matchResponse = JsonConvert.DeserializeObject<MatchResponse>(matchResponseString);
+
+            matchStats.match_id = matchResponse.id;
+
             /*****************************************************/
             /* Post MatchStats - should return match_id from API */
             /*****************************************************/

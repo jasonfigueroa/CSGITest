@@ -51,6 +51,7 @@
     <Compile Include="DbInterface.cs" />
     <Compile Include="JWT.cs" />
     <Compile Include="Match.cs" />
+    <Compile Include="MatchResponse.cs" />
     <Compile Include="MatchStats.cs" />
     <Compile Include="MatchTime.cs" />
     <Compile Include="Player.cs" />
