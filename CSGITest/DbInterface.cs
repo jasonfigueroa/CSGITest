@@ -21,6 +21,62 @@ namespace CSGITest
             RunAsync(userAuth, match, matchStats).GetAwaiter().GetResult();
         }
 
+        public static string GetSteamId()
+        {
+            // TODO need to collect username and password some other way
+            string username = "jason";
+            string password = "jason";
+            UserAuth userAuth = new UserAuth(username, password);
+
+            return GetSteamIdAsync(userAuth).GetAwaiter().GetResult();
+        }
+
+        static async Task<string> GetSteamIdAsync(UserAuth userAuth)
+        {
+            HttpClient client = new HttpClient();
+
+            /********/
+            /* Auth */
+            /********/
+            string authUrl = "http://localhost:5000/auth";
+
+            string serializedUserAuth = JsonConvert.SerializeObject(userAuth);
+            StringContent authStringContent = new StringContent(serializedUserAuth, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage authResponseMessage = await client.PostAsync(authUrl, authStringContent);
+            string authResponseString = await authResponseMessage.Content.ReadAsStringAsync();
+
+            JWT jwt = JsonConvert.DeserializeObject<JWT>(authResponseString);
+
+            /**************************************************/
+            /* Get Steam Id - should return steam_id from API */
+            /**************************************************/
+            string getSteamIdUrl = "http://localhost:5000/user/steamid";
+
+            if (client.DefaultRequestHeaders.Authorization != null)
+            {
+                Console.WriteLine("Authorization Header was not null");
+                client.DefaultRequestHeaders.Authorization = null;
+            }
+
+            client.DefaultRequestHeaders.Add("Authorization", $"JWT {jwt.access_token}");
+
+            //string serializedMatch = JsonConvert.SerializeObject(match);
+
+            //StringContent matchStringContent = new StringContent(serializedMatch, Encoding.UTF8, "application/json");
+
+            var responseString = await client.GetStringAsync(getSteamIdUrl);
+            UserSteamId steamId = JsonConvert.DeserializeObject<UserSteamId>(responseString);
+            //HttpResponseMessage matchResponseMessage = await client.PostAsync(getSteamIdUrl, matchStringContent);
+
+            // TODO on_post need to extract the match_id from the response
+            //string matchResponseString = await matchResponseMessage.Content.ReadAsStringAsync();
+
+            //MatchResponse matchResponse = JsonConvert.DeserializeObject<MatchResponse>(matchResponseString);
+
+            return steamId.steam_id;
+        }
+
         static async Task RunAsync(UserAuth userAuth, Match match, MatchStats matchStats)
         {
             HttpClient _client = new HttpClient();

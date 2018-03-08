@@ -21,7 +21,9 @@ namespace CSGITest
 
         // creating Player
         //static string playerName = "!logical"; // temporarily hard coded
-        static string steamId = "76561197994895226"; // temporarily hard coded
+        //static string steamId = "76561197994895226"; // temporarily hard coded
+        static string steamId = DbInterface.GetSteamId(); 
+        //GetSteamId(userSteamId);
         //Player player = new Player(playerName, steamId);
 
         // TODO need user_id, the following is a temporary placeholder
