@@ -54,11 +54,9 @@
     <Compile Include="MatchResponse.cs" />
     <Compile Include="MatchStats.cs" />
     <Compile Include="MatchTime.cs" />
-    <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserSteamId.cs" />
-    <Compile Include="TimeStamp.cs" />
     <Compile Include="UserAuth.cs" />
   </ItemGroup>
   <ItemGroup>
