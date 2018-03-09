@@ -19,56 +19,76 @@ namespace CSGITest
             Console.WriteLine("Listening...");
         }
 
-        static string playerName = "!logical";
+        static string steamId = DbInterface.GetSteamId();
+
+        static Match match = new Match();
         static MatchStats matchStats = new MatchStats();
         static MatchTime matchTime = new MatchTime();
 
+        // helper variables to to help control the flow of the application
         static bool stashed = false;
         static int counter = 0;
+
         static void OnNewGameState(GameState gs)
         {
-            if (gs.Round.Phase == RoundPhase.Live && gs.Player.Name == playerName)
+            if (gs.Round.Phase == RoundPhase.Live && gs.Player.SteamID == steamId)
             {
                 counter++;
+                stashed = false;
 
-                // initial match start
+                // first round played for each match
                 if (counter == 1)
                 {
                     matchTime.MatchStart = DateTime.Now;
+
+                    // stored as UTC timestamp
+                    match.datetime_start = DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+                    match.map_name = gs.Map.Name;
                 }
 
                 Console.Clear();
 
-                Console.WriteLine($"counter: {counter}");
+                // NOTE: application does not account for the player switching teams 
+                // and will only post to the db the team the player was on in the final round
+                match.team = gs.Player.Team.ToString();
 
-                stashed = false;
-
-                Console.WriteLine(gs.Player.MatchStats.JSON);
-
-                matchStats.map = gs.Map.Name;
+                Console.WriteLine($"player team: {match.team}");
                 matchStats.kills = gs.Player.MatchStats.Kills;
                 matchStats.assists = gs.Player.MatchStats.Assists;
                 matchStats.deaths = gs.Player.MatchStats.Deaths;
                 matchStats.mvps = gs.Player.MatchStats.MVPs;
                 matchStats.score = gs.Player.MatchStats.Score;
+
+                Console.WriteLine("{");
+                Console.WriteLine($"\tcounter: {counter}");
+                Console.WriteLine($"\tteam: {match.team}");
+                Console.WriteLine($"\tkills: {matchStats.kills}");
+                Console.WriteLine($"\tassists: {matchStats.assists}");
+                Console.WriteLine($"\tdeaths: {matchStats.deaths}");
+                Console.WriteLine($"\tmvps: {matchStats.mvps}");
+                Console.WriteLine($"\tscore: {matchStats.score}");
+                Console.WriteLine("}");
             }
 
             // the stashed flag is needed because without it the program will try 
-            // go save, to the db, the match stats multiple times for one match
+            // go save the match stats multiple times for one match
             if (gs.Map.Phase == MapPhase.GameOver && stashed == false)
             {
+                Console.Clear();
+
                 stashed = true;
                 matchTime.MatchStop = DateTime.Now;
                 matchTime.MatchTotal = matchTime.MatchStop - matchTime.MatchStart;
 
-                matchStats.minutes_played = matchTime.MatchTotal.Minutes;
+                match.minutes_played = matchTime.MatchTotal.Minutes;
+                match.round_win_team = gs.Round.WinTeam.ToString();
 
                 // reset counter to help track a round change
                 counter = 0;
 
                 try
                 {
-                    DbInterface.SaveToDb(matchStats);
+                    DbInterface.SaveToDb(match, matchStats);
                     Console.WriteLine("saved to the database");
                 }
                 catch (Exception ex)

@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace CSGITest
 {
-    class Player
+    class UserSteamId
     {
-        public string name { get; set; }
-        public string steamid { get; set; }
+        public string steam_id { get; set; }
     }
 }

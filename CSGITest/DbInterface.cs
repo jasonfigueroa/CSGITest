@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,23 +11,79 @@ namespace CSGITest
 {
     class DbInterface
     {
-        public static void SaveToDb(MatchStats matchStats)
+        public static void SaveToDb(Match match, MatchStats matchStats)
         {
-            //DateTime TimeStop = DateTime.Now;
-            //TimeSpan TimeDiff = TimeStop - matchStats.TimeStart;
-            //matchStats.MinutesPlayed = TimeDiff.Minutes;
-
+            // TODO need to collect username and password some other way
             string username = "jason";
             string password = "jason";
             UserAuth userAuth = new UserAuth(username, password);
 
-            RunAsync(userAuth, matchStats).GetAwaiter().GetResult();
+            RunAsync(userAuth, match, matchStats).GetAwaiter().GetResult();
         }
 
-        static async Task RunAsync(UserAuth userAuth, MatchStats matchStats)
+        public static string GetSteamId()
+        {
+            // TODO need to collect username and password some other way
+            string username = "jason";
+            string password = "jason";
+            UserAuth userAuth = new UserAuth(username, password);
+
+            return GetSteamIdAsync(userAuth).GetAwaiter().GetResult();
+        }
+
+        static async Task<string> GetSteamIdAsync(UserAuth userAuth)
+        {
+            HttpClient client = new HttpClient();
+
+            /********/
+            /* Auth */
+            /********/
+            string authUrl = "http://localhost:5000/auth";
+
+            string serializedUserAuth = JsonConvert.SerializeObject(userAuth);
+            StringContent authStringContent = new StringContent(serializedUserAuth, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage authResponseMessage = await client.PostAsync(authUrl, authStringContent);
+            string authResponseString = await authResponseMessage.Content.ReadAsStringAsync();
+
+            JWT jwt = JsonConvert.DeserializeObject<JWT>(authResponseString);
+
+            /**************************************************/
+            /* Get Steam Id - should return steam_id from API */
+            /**************************************************/
+            string getSteamIdUrl = "http://localhost:5000/user/steamid";
+
+            if (client.DefaultRequestHeaders.Authorization != null)
+            {
+                Console.WriteLine("Authorization Header was not null");
+                client.DefaultRequestHeaders.Authorization = null;
+            }
+
+            client.DefaultRequestHeaders.Add("Authorization", $"JWT {jwt.access_token}");
+
+            //string serializedMatch = JsonConvert.SerializeObject(match);
+
+            //StringContent matchStringContent = new StringContent(serializedMatch, Encoding.UTF8, "application/json");
+
+            var responseString = await client.GetStringAsync(getSteamIdUrl);
+            UserSteamId steamId = JsonConvert.DeserializeObject<UserSteamId>(responseString);
+            //HttpResponseMessage matchResponseMessage = await client.PostAsync(getSteamIdUrl, matchStringContent);
+
+            // TODO on_post need to extract the match_id from the response
+            //string matchResponseString = await matchResponseMessage.Content.ReadAsStringAsync();
+
+            //MatchResponse matchResponse = JsonConvert.DeserializeObject<MatchResponse>(matchResponseString);
+
+            return steamId.steam_id;
+        }
+
+        static async Task RunAsync(UserAuth userAuth, Match match, MatchStats matchStats)
         {
             HttpClient _client = new HttpClient();
 
+            /********/
+            /* Auth */
+            /********/
             string authUrl = "http://localhost:5000/auth";
 
             string serializedUserAuth = JsonConvert.SerializeObject(userAuth);
@@ -37,7 +94,10 @@ namespace CSGITest
 
             JWT jwt = JsonConvert.DeserializeObject<JWT>(authResponseString);
 
-            string postMatchStatsUrl = "http://localhost:5000/matchstats";
+            /************************************************/
+            /* Post Match - should return match_id from API */
+            /************************************************/
+            string postMatchUrl = "http://localhost:5000/match";
 
             if(_client.DefaultRequestHeaders.Authorization != null)
             {
@@ -47,12 +107,40 @@ namespace CSGITest
 
             _client.DefaultRequestHeaders.Add("Authorization", $"JWT {jwt.access_token}");
 
+            string serializedMatch = JsonConvert.SerializeObject(match);
+
+            // for json timestamp
+            //string javascriptJson = JsonConvert.SerializeObject(entry, new JavaScriptDateTimeConverter());
+
+            StringContent matchStringContent = new StringContent(serializedMatch, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage matchResponseMessage = await _client.PostAsync(postMatchUrl, matchStringContent);
+
+            // TODO on_post need to extract the match_id from the response
+            string matchResponseString = await matchResponseMessage.Content.ReadAsStringAsync();
+
+            MatchResponse matchResponse = JsonConvert.DeserializeObject<MatchResponse>(matchResponseString);
+
+            matchStats.match_id = matchResponse.id;
+
+            /*****************************************************/
+            /* Post MatchStats - should return match_id from API */
+            /*****************************************************/
+            string postMatchStatsUrl = "http://localhost:5000/matchstats";
+
             string serializedMatchStats = JsonConvert.SerializeObject(matchStats);
+
+            // for json timestamp
+            //string javascriptJson = JsonConvert.SerializeObject(entry, new JavaScriptDateTimeConverter());
+
             StringContent matchStatsStringContent = new StringContent(serializedMatchStats, Encoding.UTF8, "application/json");
 
             HttpResponseMessage matchStatsResponseMessage = await _client.PostAsync(postMatchStatsUrl, matchStatsStringContent);
 
-            // temp
+            /*************************************/
+            /* temporarily keeping the following */
+            /*************************************/
+
             //Console.WriteLine(matchStatsResponseMessage);
 
             //string matchStatsResponseString = await matchStatsResponseMessage.Content.ReadAsStringAsync();
