@@ -9,6 +9,7 @@ namespace CSGITest
     {
         static GameStateListener gsl;
         static UserAuth userAuth;
+        static string steamId;
         static void Main(string[] args)
         {
             bool isAuthenticated = false;
@@ -45,13 +46,14 @@ namespace CSGITest
                 if (DbInterface.IsValidUser(username, password) == true)
                 {
                     userAuth = new UserAuth(username, password);
+                    steamId = DbInterface.GetSteamId(userAuth);
                     isAuthenticated = true;
                 }
                 else
                 {
                     Console.Clear();
-                    Console.WriteLine("invalid password, please try again");
-                    Thread.Sleep(1000);
+                    Console.Write("invalid password, please try again ");
+                    Dots();
                     Console.Clear();
                 }
             }            
@@ -62,10 +64,26 @@ namespace CSGITest
             {
                 Environment.Exit(0);
             }
-            Console.WriteLine("Listening...");
+
+            Console.Clear();
+            Console.Write("user authenticated ");
+            Dots();
+            Console.Clear();
+
+            Console.Write("Listening ");
+            Dots();
         }
 
-        static string steamId = DbInterface.GetSteamId(userAuth);
+        static void Dots()
+        {
+            Thread.Sleep(500);
+            Console.Write(".");
+            Thread.Sleep(500);
+            Console.Write(".");
+            Thread.Sleep(500);
+            Console.Write(".");
+            Thread.Sleep(500);
+        }
 
         static Match match = new Match();
         static MatchStats matchStats = new MatchStats();
