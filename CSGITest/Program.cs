@@ -8,8 +8,54 @@ namespace CSGITest
     class Program
     {
         static GameStateListener gsl;
+        static UserAuth userAuth;
         static void Main(string[] args)
         {
+            bool isAuthenticated = false;
+
+            while (isAuthenticated == false)
+            {
+                Console.Write("username: ");
+                string username = Console.ReadLine();
+
+                Console.Write("password: ");
+                string password = "";
+                ConsoleKeyInfo key;
+                do
+                {
+                    key = Console.ReadKey(true);
+
+                    if (key.Key != ConsoleKey.Backspace && key.Key != ConsoleKey.Enter)
+                    {
+                        password += key.KeyChar;
+                        Console.Write("*");
+                    }
+                    else
+                    {
+                        if (key.Key == ConsoleKey.Backspace && password.Length > 0)
+                        {
+                            password = password.Substring(0, (password.Length - 1));
+                            Console.Write("\b \b");
+                        }
+                    }
+                } while (key.Key != ConsoleKey.Enter);
+
+                Console.WriteLine();
+
+                if (DbInterface.IsValidUser(username, password) == true)
+                {
+                    userAuth = new UserAuth(username, password);
+                    isAuthenticated = true;
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("invalid password, please try again");
+                    Thread.Sleep(1000);
+                    Console.Clear();
+                }
+            }            
+
             gsl = new GameStateListener(3000);
             gsl.NewGameState += new NewGameStateHandler(OnNewGameState);
             if (!gsl.Start())
@@ -19,7 +65,7 @@ namespace CSGITest
             Console.WriteLine("Listening...");
         }
 
-        static string steamId = DbInterface.GetSteamId();
+        static string steamId = DbInterface.GetSteamId(userAuth);
 
         static Match match = new Match();
         static MatchStats matchStats = new MatchStats();
@@ -88,7 +134,7 @@ namespace CSGITest
 
                 try
                 {
-                    DbInterface.SaveToDb(match, matchStats);
+                    DbInterface.SaveToDb(userAuth, match, matchStats);
                     Console.WriteLine("saved to the database");
                 }
                 catch (Exception ex)
