@@ -116,7 +116,6 @@ namespace CSGITest
                 // and will only post to the db the team the player was on in the final round
                 match.team = gs.Player.Team.ToString();
 
-                Console.WriteLine($"player team: {match.team}");
                 matchStats.kills = gs.Player.MatchStats.Kills;
                 matchStats.assists = gs.Player.MatchStats.Assists;
                 matchStats.deaths = gs.Player.MatchStats.Deaths;

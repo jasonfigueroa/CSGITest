@@ -70,10 +70,12 @@ namespace CSGITest
 
             matchId = PostMatchAsync(userAuth, jwt, match).GetAwaiter().GetResult();
 
-            PostMatchStatsAsync(userAuth, jwt, matchId, matchStats).GetAwaiter().GetResult();
+            matchStats.match_id = matchId;
+
+            PostMatchStatsAsync(userAuth, jwt, matchStats).GetAwaiter().GetResult();
         }
 
-        static async Task PostMatchStatsAsync(UserAuth userAuth, JWT jwt, int matchId, MatchStats matchStats)
+        static async Task PostMatchStatsAsync(UserAuth userAuth, JWT jwt, MatchStats matchStats)
         {
             HttpClient client = new HttpClient();
 
