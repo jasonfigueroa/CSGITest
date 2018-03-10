@@ -122,15 +122,13 @@ namespace CSGITest
                 matchStats.mvps = gs.Player.MatchStats.MVPs;
                 matchStats.score = gs.Player.MatchStats.Score;
 
-                Console.WriteLine("{");
-                Console.WriteLine($"\tcounter: {counter}");
-                Console.WriteLine($"\tteam: {match.team}");
-                Console.WriteLine($"\tkills: {matchStats.kills}");
-                Console.WriteLine($"\tassists: {matchStats.assists}");
-                Console.WriteLine($"\tdeaths: {matchStats.deaths}");
-                Console.WriteLine($"\tmvps: {matchStats.mvps}");
-                Console.WriteLine($"\tscore: {matchStats.score}");
-                Console.WriteLine("}");
+                Console.WriteLine($"counter: {counter}");
+                Console.WriteLine($"team: {match.team}");
+                Console.WriteLine($"kills: {matchStats.kills}");
+                Console.WriteLine($"assists: {matchStats.assists}");
+                Console.WriteLine($"deaths: {matchStats.deaths}");
+                Console.WriteLine($"mvps: {matchStats.mvps}");
+                Console.WriteLine($"score: {matchStats.score}");
             }
 
             // the stashed flag is needed because without it the program will try 
