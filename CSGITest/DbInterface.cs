@@ -29,7 +29,7 @@ namespace CSGITest
         {
             HttpClient client = new HttpClient();
 
-            string url = "http://api.jasonfigueroa.io/auth";
+            string url = "https://api.jasonfigueroa.io/auth";
 
             string serializedUserAuth = JsonConvert.SerializeObject(userAuth);
             StringContent authStringContent = new StringContent(serializedUserAuth, Encoding.UTF8, "application/json");
@@ -51,7 +51,7 @@ namespace CSGITest
 
             JWT jwt = Auth(userAuth).GetAwaiter().GetResult();
 
-            string url = "http://api.jasonfigueroa.io/user/steamid";
+            string url = "https://api.jasonfigueroa.io/user/steamid";
 
             client.DefaultRequestHeaders.Add("Authorization", $"JWT {jwt.access_token}");
 
@@ -79,7 +79,7 @@ namespace CSGITest
         {
             HttpClient client = new HttpClient();
 
-            string url = "http://api.jasonfigueroa.io/matchstats";
+            string url = "https://api.jasonfigueroa.io/matchstats";
 
             client.DefaultRequestHeaders.Add("Authorization", $"JWT {jwt.access_token}");
 
@@ -94,7 +94,7 @@ namespace CSGITest
         {
             HttpClient client = new HttpClient();
 
-            string url = "http://api.jasonfigueroa.io/match";
+            string url = "https://api.jasonfigueroa.io/match";
 
             client.DefaultRequestHeaders.Add("Authorization", $"JWT {jwt.access_token}");
 
