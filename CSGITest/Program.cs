@@ -122,7 +122,7 @@ namespace CSGITest
                 matchStats.mvps = gs.Player.MatchStats.MVPs;
                 matchStats.score = gs.Player.MatchStats.Score;
 
-                Console.WriteLine($"counter: {counter}");
+                //Console.WriteLine($"counter: {counter}");
                 Console.WriteLine($"team: {match.team}");
                 Console.WriteLine($"kills: {matchStats.kills}");
                 Console.WriteLine($"assists: {matchStats.assists}");
