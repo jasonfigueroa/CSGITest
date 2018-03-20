@@ -9,7 +9,7 @@ namespace CSGITest
     {
         static GameStateListener gsl;
         static UserAuth userAuth;
-        static string steamId;
+        //static string steamId;
         static void Main(string[] args)
         {
             bool isAuthenticated = false;
@@ -46,7 +46,7 @@ namespace CSGITest
                 if (DbInterface.IsValidUser(username, password) == true)
                 {
                     userAuth = new UserAuth(username, password);
-                    steamId = DbInterface.GetSteamId(userAuth);
+                    //steamId = DbInterface.GetSteamId(userAuth);
                     isAuthenticated = true;
                 }
                 else
@@ -95,7 +95,8 @@ namespace CSGITest
 
         static void OnNewGameState(GameState gs)
         {
-            if (gs.Round.Phase == RoundPhase.Live && gs.Player.SteamID == steamId)
+            //if (gs.Round.Phase == RoundPhase.Live && gs.Player.SteamID == steamId)
+            if (gs.Round.Phase == RoundPhase.Live)
             {
                 counter++;
                 stashed = false;
