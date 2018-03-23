@@ -99,33 +99,6 @@ namespace CSGITest
 
         static void OnNewGameState(GameState gs)
         {
-            //Console.WriteLine(gs.Round.pr);
-            //if (gs.Round.Phase == RoundPhase.Over && gs.Round.Bomb == BombState.Planted)
-            //{
-            //    LightInterface.alive = false;
-            //    LightInterface.TurnLightOff().Wait();
-            //}
-
-            //if (gs.Round.Phase == RoundPhase.Live && gs.Round.Bomb == BombState.Planted)
-            //{
-            //    LightInterface.alive = true;
-            //    LightInterface.BombActive();
-            //}
-
-            //else if (gs.Round.Phase == RoundPhase.Over && gs.Round.Bomb == BombState.Defused)
-            //{
-            //    LightInterface.alive = false;
-            //    LightInterface.BombDefused().Wait();
-            //    LightInterface.TurnLightOff().Wait();
-            //}
-
-            //else if (gs.Round.Phase == RoundPhase.Over && gs.Round.Bomb == BombState.Exploded)
-            //{
-            //    LightInterface.alive = false;
-            //    LightInterface.BombExplode().Wait();
-            //    LightInterface.TurnLightOff().Wait();
-            //}
-
             if (gs.Round.Phase == RoundPhase.Over)
                 {
                     LightInterface.alive = false;
@@ -137,20 +110,6 @@ namespace CSGITest
                 LightInterface.alive = true;
                 LightInterface.BombActive();
             }
-
-            //else if (gs.Round.Phase == RoundPhase.Over && gs.Round.Bomb == BombState.Defused)
-            //{
-            //    LightInterface.alive = false;
-            //    LightInterface.BombDefused().Wait();
-            //    LightInterface.TurnLightOff().Wait();
-            //}
-
-            //else if (gs.Round.Phase == RoundPhase.Over && gs.Round.Bomb == BombState.Exploded)
-            //{
-            //    LightInterface.alive = false;
-            //    LightInterface.BombExplode().Wait();
-            //    LightInterface.TurnLightOff().Wait();
-            //}
 
             if (gs.Round.Phase == RoundPhase.Live && gs.Player.SteamID == steamId)
             {
